@@ -84,13 +84,17 @@ class Block:
             raise Exception('The block must meet the PoW requirement')
         if abs(block.difficulty-last_block.difficulty) > 1:
             raise Exception('The difficulty must changed by 1 only')
-        regenerated_hash= crypto_hash(block.timestamp, block.last_hash, block.hash, block.data, block.nonce, block.difficulty)
+        regenerated_hash= crypto_hash(block.timestamp, block.last_hash, block.data, block.nonce, block.difficulty)
         if regenerated_hash!= block.hash:
             raise Exception('the block hash must be a valid combination of the block fields')
 
 def main():
     genesis_block=Block.genesis()
-    block=Block.mine_block(genesis_block,'foo')
-    print(block)
+    bad_block=Block.mine_block(genesis_block,'foo')
+    # bad_block.last_hash = 'damk'
+    try:
+        Block.validate_block(genesis_block,bad_block)
+    except Exception as ex:
+        print(f'ERROR: {ex}')
 if __name__=='__main__':
     main()
