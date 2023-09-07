@@ -69,7 +69,24 @@ class Block:
         if (last_block.difficulty -1 ) > 0:
             return last_block.difficulty -1
         return 1 
-
+    @staticmethod
+    def validate_block(last_block,block):
+        """
+        Validate the block must follow these rules:
+        -the block must have proper last_hash reference
+        -meet the requirement of PoW
+        -the difficulty adjust by 1 avoid hurting the system 
+        -the block hash must be a valid combination of the block fields
+        """
+        if last_block.hash != block.last_hash:
+            raise Exception('The last_hash reference must be true')
+        if hex_to_binary(block.hash)[0:block.difficulty] != '0'*block.difficulty:
+            raise Exception('The block must meet the PoW requirement')
+        if abs(block.difficulty-last_block.difficulty) > 1:
+            raise Exception('The difficulty must changed by 1 only')
+        regenerated_hash= crypto_hash(block.timestamp, block.last_hash, block.hash, block.data, block.nonce, block.difficulty)
+        if regenerated_hash!= block.hash:
+            raise Exception('the block hash must be a valid combination of the block fields')
 
 def main():
     genesis_block=Block.genesis()
