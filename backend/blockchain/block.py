@@ -1,5 +1,6 @@
 import time
 from backend.utils.hash import crypto_hash
+from backend.utils.conver_binary import hex_to_binary
 from backend.config import MINE_RATE
 
 GENESIS_BLOCK={
@@ -41,7 +42,7 @@ class Block:
         nonce = 0   #keep track the number of loop
         hash=crypto_hash(timestamp,last_hash,data,difficulty,nonce)
         # create a hash until the leading 0 = difficulty
-        while hash[0:difficulty] != '0'* difficulty:
+        while hex_to_binary(hash)[0:difficulty] != '0'* difficulty: #using binary for more precisely
             nonce +=1
             timestamp=time.time_ns()
             difficulty = Block.adjust_difficulty(last_block,timestamp)
