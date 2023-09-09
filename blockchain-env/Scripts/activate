@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\Admin\source\blockchain project\blockchain-env"
+VIRTUAL_ENV="C:\Blockchain-Mining\Blockchain-Mining\blockchain-env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
