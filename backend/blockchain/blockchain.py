@@ -26,7 +26,14 @@ class Blockchain:
         except Exception as e:
             print(f'ERROR: {e}')
         self.chain = chain
-
+    def json_type(self):
+        """
+        add block which convert to dict to chain
+        """
+        block_list = []
+        for i in range(len(self.chain)):
+            block_list.append(self.chain[i].json_type())
+        return block_list
     @staticmethod
     def validate_chain(chain):
         """
@@ -45,6 +52,6 @@ def main():
     blockchain= Blockchain()
     blockchain.add_block('one')
     blockchain.add_block('two')
-    print(blockchain)
+    print(blockchain.json_type())
 if __name__=='__main__':
     main()

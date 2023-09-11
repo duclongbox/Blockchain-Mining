@@ -29,6 +29,11 @@ class Block:
             f'difficulty: {self.difficulty}, '
             f'nonce: {self.nonce}, '
         )
+    def json_type(self):
+        """
+        jsonify can convert dict, list
+        """
+        return self.__dict__
     @staticmethod
     def mine_block(last_block, data):
         """
@@ -49,6 +54,7 @@ class Block:
             hash=crypto_hash(timestamp,last_hash,data,difficulty,nonce) 
 
         return Block(timestamp, last_hash, hash,data,difficulty,nonce)
+    
     @staticmethod
     def genesis():
         """

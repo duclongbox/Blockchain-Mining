@@ -6,15 +6,20 @@ for windows:
 for unix:
     source "environment file"/bin/activate
 ```
+
 **Install all the packages**
 ```
 pip3 install -r requirements.txt
 ```
-
-
 **Activate the virtual environment**
 **create __init__.py for each directories to run the module**
 ```
 python3 -m backend.blockchain.block
 python3 -m pytest backend/tests
+```
+
+**Run a peer instance**
+make sure activate virtual environment
+```
+export PEER=True && python3 -m backend.app
 ```
