@@ -24,7 +24,7 @@ class Blockchain:
         try: 
             Blockchain.validate_chain(chain)
         except Exception as e:
-            print(f'ERROR: {e}')
+            print(f'ERROR : {e}')
         self.chain = chain
     def json_type(self):
         """
