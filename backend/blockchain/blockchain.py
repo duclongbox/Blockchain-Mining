@@ -26,6 +26,7 @@ class Blockchain:
         except Exception as e:
             print(f'ERROR : {e}')
         self.chain = chain
+    
     def json_type(self):
         """
         add block which convert to dict to chain
@@ -34,6 +35,19 @@ class Blockchain:
         for i in range(len(self.chain)):
             block_list.append(self.chain[i].json_type())
         return block_list
+    @staticmethod
+    def deserialize(JSON_chain):
+        """
+        Deserialize of the list of serialized blocks to Blockchain instance
+        """
+        blockchain = Blockchain()
+        block_list =[]
+        
+        for i in range(len(JSON_chain)):
+            block_list.append(Block.deserialize(JSON_chain[i]))
+        blockchain.chain = block_list
+        return blockchain
+        
     @staticmethod
     def validate_chain(chain):
         """

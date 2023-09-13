@@ -62,6 +62,7 @@ class Block:
         """
         # return Block(1, 'genesis_last_hash', 'genesis_hash',[])
         return Block(**GENESIS_BLOCK) # ** dictionary unpacking take all the value pass as arguments
+    @staticmethod
     def deserialize(block_jsonType):
         """
         Deserialize the Json type to Block-form 
