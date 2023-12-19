@@ -7,10 +7,10 @@ class Transaction:
     """
     Document of an exchange in currency from sender to recipients
     """
-    def __init__(self, wallet_sender, recipient,amount):
-        self.id = str(uuid.uuid4())[:8]
-        self.output = self.create_output(wallet_sender, recipient,amount)
-        self.input = {
+    def __init__(self, wallet_sender=None, recipient=None,amount=None,id=None, output=None, input=None):
+        self.id = id or str(uuid.uuid4())[:8]
+        self.output = output or self.create_output(wallet_sender, recipient,amount)
+        self.input =input or {
             'timestamp' :time.time_ns(),
             'amount': wallet_sender.balance,
             'address': wallet_sender.address,
@@ -22,7 +22,7 @@ class Transaction:
         """
         structure ouput for the transaction
         """
-        if amount> wallet_sender.balance:
+        if amount > wallet_sender.balance:
             raise Exception('Amount exceeded')
         output = {}
         output[recipient] = amount # asign the amount to recipient
@@ -55,6 +55,15 @@ class Transaction:
         """
         return self.__dict__
     @staticmethod
+    def deserialize(transaction):
+        """
+        deserialize json back to transaction class object
+        """
+        # return Transaction(id = transaction['id'],output = transaction['output'],input = transaction['input'])
+        return Transaction(**transaction) #unpack the dictionary
+        
+        
+    @staticmethod
     def is_validate_trans(transaction):
         total_output = sum(transaction.output.values())
         if(transaction.input['amount']) != total_output:
@@ -64,7 +73,10 @@ class Transaction:
    
 def main():
     transaction = Transaction(Wallet(),'receive',39)
-    print(transaction.__dict__)
+    print(f'original: {transaction.__dict__}')
+    transaction_json = transaction.json_type()
+    retrans_transact = Transaction.deserialize(transaction_json)
+    print(f'transferback : {retrans_transact.__dict__}')
 if __name__ == '__main__':
     main()
         
