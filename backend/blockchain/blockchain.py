@@ -1,5 +1,7 @@
 from backend.blockchain.block import Block
-
+from backend.wallet.transaction import Transaction
+from backend.wallet.wallet  import Wallet
+from backend.config import MINING_REWARD_INPUT
 class Blockchain:
     """
     Blockchain: a public ledger of transactions.
@@ -60,7 +62,35 @@ class Blockchain:
         for i in range(1,len(chain)):
             block = chain[i]
             Block.validate_block(chain[i-1],block)
-
+        Blockchain.validate_transaction_chain(chain)
+    @staticmethod
+    def validate_transaction_chain(chain):
+        """
+        Enforce the rule of chain composed of blocks of transaction:
+        -> Each transaction must appreared onnce in chain
+        -> one mining reward/block
+        -> valid transaction
+        """
+        transaction_id = set()
+        for i in range(len(chain)):
+            block = chain[i] 
+            is_reward = False
+            for transaction_json in block.data:
+                transaction = Transaction.deserialize(transaction_json)
+                if transaction.id in transaction_id:
+                    raise Exception(f'{transaction.id} is not unique')
+                if transaction.input == MINING_REWARD_INPUT:
+                    if is_reward == True:
+                        raise Exception(f'Rewarding should be granted once check {block.hash}')
+                    is_reward = True
+                else:
+                    transaction_id.add(transaction.id)
+                    historic_chain = Blockchain()
+                    historic_chain.chain = chain[:i]
+                    historic_balance = Wallet.calculate_balance(historic_chain,transaction.input['address'])
+                    if historic_balance != transaction.input['amount']:
+                        raise Exception(f'{transaction.id} has invalid input amount')
+                Transaction.is_validate_trans(transaction)
 
 def main():
     blockchain= Blockchain()

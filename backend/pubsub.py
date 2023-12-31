@@ -5,7 +5,7 @@ from pubnub.callbacks import SubscribeCallback
 
 from backend.blockchain.block import Block
 from backend.wallet.transaction import Transaction
-
+from backend.wallet.transaction_pool import TransactionPool
 #set up keys
 pnconfig = PNConfiguration()
 pnconfig.publish_key = 'pub-c-d06d1b61-25b4-4db9-8776-119cae69fe80'
@@ -30,12 +30,13 @@ class Listioner(SubscribeCallback):
             new_chain.append(block)
             try:
                 self.blockchain.replace_chain(new_chain) 
+                self.transaction_pool.clear_transaction(self.blockchain)
                 print('successfully replace a chain')
             except Exception as e:
                 print(f'ERROR VALIDATE CHAIN: {e}')
         elif message_object.channel ==  CHANNELS['TRANSACTION']:
             transaction = Transaction.deserialize(message_object.message)
-            self.transaction_pool.set_transaction(transaction)
+            self.transaction_pool.set_transaction(transaction) #clear the recorded transaction in block
             print(f'\n-- set new transaction to transaction pool ')
             
 class PubSub():
@@ -51,9 +52,10 @@ class PubSub():
         """
         Publish the message object to the channel
         """
-        self.pubnub.unsubscribe().channels(CHANNELS.values()).execute() # avoid redundant functionality
+        # self.pubnub.unsubscribe().channels(CHANNELS.values()).execute() # avoid redundant functionality
         self.pubnub.publish().channel(channel).message(message).sync()
-        self.pubnub.subscribe().channels(CHANNELS.values()).execute()
+        # self.pubnub.subscribe().channels(CHANNELS.values()).execute()
+
         
     def broadcast_block(self,block):
         """

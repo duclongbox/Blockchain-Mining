@@ -11,30 +11,45 @@ from backend.pubsub import PubSub
 
 app = Flask(__name__)
 blockchain = Blockchain()
-wallet = Wallet()
+wallet = Wallet(blockchain)
 transaction_pool = TransactionPool()
 pubsub = PubSub(blockchain,transaction_pool)   
 
 @app.route('/')
 def route_mainpage():
     return 'Welcome to webpage'
+
 @app.route('/blockchain')
 def route_blockchain():
     return jsonify(blockchain.json_type())
+
 @app.route('/blockchain/mining')
 def route_miningBlocks():
-    blockchain.add_block('NEW MINED BLOCK')
+    transaction_data = transaction_pool.transaction_query()
+    transaction_data.append(Transaction.reward_transaction(wallet).json_type())
+    blockchain.add_block(transaction_data)
     added_block = blockchain.chain[-1]
     print('new block added')
     pubsub.broadcast_block(added_block)
+    transaction_pool.clear_transaction(blockchain)
     return jsonify(added_block.json_type())
+
 @app.route('/wallet/transaction', methods =['POST'])
 def wallet_transaction():
     transaction_fromUI = request.get_json()
-    transaction = Transaction(wallet,transaction_fromUI['recipient'],transaction_fromUI['amount'])
+    transaction  = transaction_pool.existed_transaction(wallet.address)
+    if transaction:
+       transaction.update_transaction(wallet,transaction_fromUI['recipient'],transaction_fromUI['amount'])
+    else:
+        transaction = Transaction(wallet,transaction_fromUI['recipient'],transaction_fromUI['amount'])
+    
     pubsub.broadcast_transaction(transaction)
-    return jsonify(transaction.json_type())
+    print(f'transaction :  {transaction_pool.__dict__}')
 
+    return jsonify(transaction.json_type())
+@app.route('/wallet/info')
+def wallet_information():
+    return jsonify({'address':wallet.address, 'balance':wallet.balance})
 
 ROOT_PORT = 3107
 PORT = ROOT_PORT

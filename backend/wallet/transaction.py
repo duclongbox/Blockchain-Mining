@@ -1,6 +1,7 @@
 import time
 import uuid
 from backend.wallet.wallet import Wallet
+from backend.config import MINING_REWARD,MINING_REWARD_INPUT
 
 
 class Transaction:
@@ -20,7 +21,7 @@ class Transaction:
     
     def create_output(self,wallet_sender,recipient, amount):
         """
-        structure ouput for the transaction
+        structure output for the transaction
         """
         if amount > wallet_sender.balance:
             raise Exception('Amount exceeded')
@@ -62,15 +63,30 @@ class Transaction:
         # return Transaction(id = transaction['id'],output = transaction['output'],input = transaction['input'])
         return Transaction(**transaction) #unpack the dictionary
         
-        
     @staticmethod
     def is_validate_trans(transaction):
+        if transaction.input == MINING_REWARD_INPUT:
+            if list(transaction.output.values()) != [MINING_REWARD]:
+                raise Exception('Invalid transaction reward')
+            return
+        
         total_output = sum(transaction.output.values())
+        
         if(transaction.input['amount']) != total_output:
             raise Exception('invalid output transaction')
         if not  Wallet.verify(transaction.input['public_key'],transaction.output,transaction.input['signature']):
             raise Exception('invalid signature')
-   
+    @staticmethod
+    def reward_transaction(miner_address):
+       """
+       Miner will receive award transaction
+       """
+       output = {}
+       output[miner_address.address] = MINING_REWARD
+       return Transaction(input=MINING_REWARD_INPUT,output = output)
+       
+    
+       
 def main():
     transaction = Transaction(Wallet(),'receive',39)
     print(f'original: {transaction.__dict__}')

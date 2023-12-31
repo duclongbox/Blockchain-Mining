@@ -5,3 +5,8 @@ SEC = MILISEC*1000
 
 MINE_RATE = SEC*4
 STARTING_BALACNCE = 1000
+
+MINING_REWARD = 50
+MINING_REWARD_INPUT = {
+    'address':'**Congratulation-Official-Mining-reward**'
+}
