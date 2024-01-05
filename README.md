@@ -23,3 +23,8 @@ make sure activate virtual environment
 ```
 export PEER=True && python3 -m backend.app
 ```
+**Seed the backend with data**
+make sure activate virtual environment
+```
+export SEED_DATA && python3 -m backend.app
+```

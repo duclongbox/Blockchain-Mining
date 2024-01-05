@@ -2,6 +2,7 @@ import os
 import requests
 import random
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 from backend.wallet.wallet import Wallet
 from backend.wallet.transaction import Transaction
@@ -10,6 +11,7 @@ from backend.wallet.transaction_pool import TransactionPool
 from backend.pubsub import PubSub
 
 app = Flask(__name__)
+CORS(app,resources={r'/*':{'origins':'http://localhost:3000'}})  #allow server not get block from browser
 blockchain = Blockchain()
 wallet = Wallet(blockchain)
 transaction_pool = TransactionPool()
@@ -22,6 +24,17 @@ def route_mainpage():
 @app.route('/blockchain')
 def route_blockchain():
     return jsonify(blockchain.json_type())
+
+@app.route('/blockchain/range')
+def route_blockchain_range():
+    start = int(request.args.get('start'))
+    end = int(request.args.get('end'))
+    
+    return jsonify(blockchain.json_type()[::-1][start:end])
+
+@app.route('/blockchain/length')
+def route_blockchain_length():
+    return jsonify(len(blockchain.chain))
 
 @app.route('/blockchain/mining')
 def route_miningBlocks():
@@ -63,6 +76,14 @@ if os.environ.get('PEER')=='True':
         print('Succesfully synchronized the local chain')
     except Exception as e :
         print(f'ERROR SYNCHROLIZE: {e}')
-
+if os.environ.get('SEED_DATA')=='True':
+    """
+    create each block with two transaction
+    """
+    for i in range(10):
+        blockchain.add_block([
+            Transaction(Wallet(),Wallet().address,random.randint(2,50)).json_type(),
+            Transaction(Wallet(),Wallet().address,random.randint(2,50)).json_type()
+        ])
 app.run(port=PORT)
 
