@@ -34,7 +34,7 @@ function ToggleTransactionDisplay({block}){
 }
 
 function Block({block}){
-    const {timestamp,hash,data} = block
+    const {timestamp,hash} = block
     const timestampDisplay = new Date(timestamp/MILLISECOND).toLocaleString()
     return (
         <div className="Block">

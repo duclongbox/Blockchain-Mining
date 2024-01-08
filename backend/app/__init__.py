@@ -64,6 +64,12 @@ def wallet_transaction():
 def wallet_information():
     return jsonify({'address':wallet.address, 'balance':wallet.balance})
 
+@app.route('/transactions')
+def route_transactions():
+    return jsonify(transaction_pool.transaction_query())
+    
+    
+
 ROOT_PORT = 3107
 PORT = ROOT_PORT
 if os.environ.get('PEER')=='True':
@@ -78,6 +84,7 @@ if os.environ.get('PEER')=='True':
         print(f'ERROR SYNCHROLIZE: {e}')
 if os.environ.get('SEED_DATA')=='True':
     """
+    Seeding data
     create each block with two transaction
     """
     for i in range(10):
@@ -85,5 +92,10 @@ if os.environ.get('SEED_DATA')=='True':
             Transaction(Wallet(),Wallet().address,random.randint(2,50)).json_type(),
             Transaction(Wallet(),Wallet().address,random.randint(2,50)).json_type()
         ])
+    for i in range(3):
+        transaction_pool.set_transaction(
+            Transaction(Wallet(),Wallet().address,random.randint(2,50))
+        )
+        
 app.run(port=PORT)
 

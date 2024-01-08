@@ -1,5 +1,6 @@
 import React, {useState,useEffect} from 'react'
 import { Button } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 import Block from './Block'
 
 const PAGE_RANGE = 3
@@ -25,6 +26,10 @@ function Blockchain() {
     }
     return(
         <div className="Blockchain">
+            <Link to="/">Home</Link>{' '}
+            <Link to="/conduct-transaction">Transaction</Link>{' '}
+            <Link to="/transaction-pool">Transaction History</Link>
+            <hr/>
             <h3>Blockchain</h3>
             <div>
                 {blockchain.map((block)=>{
